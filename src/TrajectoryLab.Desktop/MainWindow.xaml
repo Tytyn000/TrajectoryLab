@@ -1,0 +1,449 @@
+﻿<Window x:Class="TrajectoryLab.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:TrajectoryLab.Desktop.Controls"
+        Title="TrajectoryLab"
+        Width="1500"
+        Height="920"
+        MinWidth="1120"
+        MinHeight="720"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0">
+            <MenuItem Header="_Fichier">
+                <MenuItem Header="Quitter"
+                          Command="{x:Static SystemCommands.CloseWindowCommand}"
+                          CommandTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+            </MenuItem>
+
+            <MenuItem Header="_Paramètres">
+                <MenuItem Header="Valider les paramètres"
+                          Command="{Binding ValidateCommand}" />
+            </MenuItem>
+        </Menu>
+
+        <Border Grid.Row="1"
+                Padding="9,7"
+                Background="{StaticResource PanelBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding ValidateCommand}"
+                        Content="Valider les paramètres" />
+
+                <StackPanel Grid.Column="2"
+                            VerticalAlignment="Center">
+                    <TextBlock FontSize="16"
+                               FontWeight="SemiBold"
+                               Text="TrajectoryLab" />
+                    <TextBlock Style="{StaticResource SecondaryTextStyle}"
+                               Text="Configuration scientifique de la simulation" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="3"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SecondaryTextStyle}"
+                           Text="Unités SI · calculs en double précision" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2"
+              Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="215" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Padding="10"
+                    Background="{StaticResource PanelBackgroundBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Style="{StaticResource SectionHeaderTextStyle}"
+                               Text="Projet" />
+
+                    <TreeView>
+                        <TreeViewItem Header="Simulation principale"
+                                      IsExpanded="True">
+                            <TreeViewItem Header="Lancement et projectile" />
+                            <TreeViewItem Header="Astre et atmosphère" />
+                            <TreeViewItem Header="Vent et forces" />
+                            <TreeViewItem Header="Solveur et limites" />
+                        </TreeViewItem>
+
+                        <TreeViewItem Header="Modèles scientifiques"
+                                      IsExpanded="True">
+                            <TreeViewItem Header="Gravité" />
+                            <TreeViewItem Header="Atmosphère" />
+                            <TreeViewItem Header="Vent" />
+                            <TreeViewItem Header="Traînée" />
+                            <TreeViewItem Header="Coriolis" />
+                            <TreeViewItem Header="Magnus" />
+                        </TreeViewItem>
+                    </TreeView>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1"
+                          Width="6"
+                          HorizontalAlignment="Stretch"
+                          Background="Transparent" />
+
+            <Border Grid.Column="2"
+                    Background="{StaticResource PanelBackgroundBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1">
+<TabControl>
+            <TabItem Header="Lancement et projectile">
+                <ScrollViewer Padding="12"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Conditions initiales">
+                            <StackPanel>
+                                <controls:ParameterField Label="Position X"
+                                                         Unit="m"
+                                                         HelpText="Position initiale vers l'Est."
+                                                         Text="{Binding Parameters.InitialConditions.InitialX}" />
+                                <controls:ParameterField Label="Position Y"
+                                                         Unit="m"
+                                                         HelpText="Position initiale vers le Nord."
+                                                         Text="{Binding Parameters.InitialConditions.InitialY}" />
+                                <controls:ParameterField Label="Position Z"
+                                                         Unit="m"
+                                                         HelpText="Altitude initiale dans le repère local."
+                                                         Text="{Binding Parameters.InitialConditions.InitialZ}" />
+                                <controls:ParameterField Label="Vitesse initiale"
+                                                         Unit="m/s"
+                                                         HelpText="Norme du vecteur vitesse au lancement."
+                                                         Text="{Binding Parameters.InitialConditions.InitialSpeed}" />
+                                <controls:ParameterField Label="Élévation"
+                                                         Unit="°"
+                                                         HelpText="Angle au-dessus de l'horizontale, entre -90° et 90°."
+                                                         Text="{Binding Parameters.InitialConditions.ElevationDegrees}" />
+                                <controls:ParameterField Label="Azimut"
+                                                         Unit="°"
+                                                         HelpText="Direction horizontale du lancement dans le repère Est-Nord."
+                                                         Text="{Binding Parameters.InitialConditions.AzimuthDegrees}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Projectile">
+                            <StackPanel>
+                                <controls:ParameterField Label="Masse"
+                                                         Unit="kg"
+                                                         HelpText="Masse inertielle du projectile."
+                                                         Text="{Binding Parameters.Projectile.Mass}" />
+                                <controls:ParameterField Label="Surface frontale"
+                                                         Unit="m²"
+                                                         HelpText="Surface de référence utilisée par la traînée quadratique."
+                                                         Text="{Binding Parameters.Projectile.CrossSectionalArea}" />
+                                <controls:ParameterField Label="Coefficient de traînée de référence"
+                                                         Unit="—"
+                                                         HelpText="Valeur utilisée par le modèle de traînée constant."
+                                                         Text="{Binding Parameters.Projectile.ReferenceDragCoefficient}" />
+                                <controls:ParameterField Label="Rayon"
+                                                         Unit="m"
+                                                         HelpText="Rayon de référence utilisé par le modèle de Magnus."
+                                                         Text="{Binding Parameters.Projectile.Radius}" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Astre et atmosphère">
+                <ScrollViewer Padding="12"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Astre et gravité">
+                            <StackPanel>
+                                <controls:ParameterChoice Label="Modèle de gravité"
+                                                          HelpText="La sphère uniforme utilise une gravité continue à l'intérieur et en 1/r² à l'extérieur."
+                                                          ItemsSource="{Binding Parameters.CelestialBody.GravityModelOptions}"
+                                                          SelectedValue="{Binding Parameters.CelestialBody.SelectedGravityModel}" />
+                                <controls:ParameterChoice Label="Définition de la sphère"
+                                                          HelpText="Choisit les deux grandeurs indépendantes permettant de déduire la masse et la gravité."
+                                                          ItemsSource="{Binding Parameters.CelestialBody.UniformSphereDefinitionOptions}"
+                                                          SelectedValue="{Binding Parameters.CelestialBody.SelectedUniformSphereDefinition}" />
+                                <controls:ParameterField Label="Rayon de l'astre"
+                                                         Unit="m"
+                                                         HelpText="Distance entre le centre de l'astre et son niveau de référence."
+                                                         Text="{Binding Parameters.CelestialBody.BodyRadius}" />
+                                <controls:ParameterField Label="Gravité de surface / constante"
+                                                         Unit="m/s²"
+                                                         HelpText="Gravité au rayon de référence, ou valeur du modèle local constant."
+                                                         Text="{Binding Parameters.CelestialBody.SurfaceGravityAcceleration}" />
+                                <controls:ParameterField Label="Masse volumique uniforme"
+                                                         Unit="kg/m³"
+                                                         HelpText="Masse volumique supposée identique dans tout le volume de l'astre."
+                                                         Text="{Binding Parameters.CelestialBody.BodyDensity}" />
+                                <controls:ParameterField Label="Masse totale"
+                                                         Unit="kg"
+                                                         HelpText="Masse totale de l'astre lorsque ce mode de définition est choisi."
+                                                         Text="{Binding Parameters.CelestialBody.BodyMass}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Atmosphère">
+                            <StackPanel>
+                                <controls:ParameterChoice Label="Modèle atmosphérique"
+                                                          HelpText="Vide, propriétés constantes, ou atmosphère standard continue de 1976."
+                                                          ItemsSource="{Binding Parameters.Atmosphere.AtmosphereModelOptions}"
+                                                          SelectedValue="{Binding Parameters.Atmosphere.SelectedAtmosphereModel}" />
+                                <controls:ParameterChoice Label="Définition de l'atmosphère constante"
+                                                          HelpText="La densité peut être imposée directement ou déduite de p = ρRT."
+                                                          ItemsSource="{Binding Parameters.Atmosphere.ConstantAtmosphereDefinitionOptions}"
+                                                          SelectedValue="{Binding Parameters.Atmosphere.SelectedConstantAtmosphereDefinition}" />
+                                <controls:ParameterField Label="Densité constante"
+                                                         Unit="kg/m³"
+                                                         HelpText="Masse volumique de l'air lorsque la définition par densité est choisie."
+                                                         Text="{Binding Parameters.Atmosphere.ConstantAirDensity}" />
+                                <controls:ParameterField Label="Pression constante"
+                                                         Unit="Pa"
+                                                         HelpText="Pression absolue lorsque la densité est calculée par la loi des gaz parfaits."
+                                                         Text="{Binding Parameters.Atmosphere.ConstantPressure}" />
+                                <controls:ParameterField Label="Température"
+                                                         Unit="K"
+                                                         HelpText="Température absolue utilisée par l'atmosphère constante et la vitesse du son."
+                                                         Text="{Binding Parameters.Atmosphere.ConstantTemperature}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Gaz parfait">
+                            <StackPanel>
+                                <controls:ParameterField Label="Rapport des capacités thermiques γ"
+                                                         Unit="—"
+                                                         HelpText="Intervient dans la vitesse du son a = √(γRT)."
+                                                         Text="{Binding Parameters.Gas.SpecificHeatRatio}" />
+                                <controls:ParameterField Label="Constante spécifique R"
+                                                         Unit="J/(kg·K)"
+                                                         HelpText="Constante spécifique du gaz utilisée par p = ρRT et a = √(γRT)."
+                                                         Text="{Binding Parameters.Gas.SpecificGasConstant}" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Vent et forces">
+                <ScrollViewer Padding="12"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Vent">
+                            <StackPanel>
+                                <controls:ParameterChoice Label="Modèle de vent"
+                                                          HelpText="Les composantes suivent X Est, Y Nord et Z vers le haut."
+                                                          ItemsSource="{Binding Parameters.Wind.WindModelOptions}"
+                                                          SelectedValue="{Binding Parameters.Wind.SelectedWindModel}" />
+
+                                <TextBlock Margin="0,8,0,4"
+                                           FontWeight="SemiBold"
+                                           Text="Vent constant" />
+                                <controls:ParameterField Label="Composante X"
+                                                         Unit="m/s"
+                                                         HelpText="Composante du vent vers l'Est."
+                                                         Text="{Binding Parameters.Wind.ConstantWindX}" />
+                                <controls:ParameterField Label="Composante Y"
+                                                         Unit="m/s"
+                                                         HelpText="Composante du vent vers le Nord."
+                                                         Text="{Binding Parameters.Wind.ConstantWindY}" />
+                                <controls:ParameterField Label="Composante Z"
+                                                         Unit="m/s"
+                                                         HelpText="Composante verticale positive vers le haut."
+                                                         Text="{Binding Parameters.Wind.ConstantWindZ}" />
+
+                                <TextBlock Margin="0,12,0,4"
+                                           FontWeight="SemiBold"
+                                           Text="Vent linéaire" />
+                                <controls:ParameterField Label="Altitude basse"
+                                                         Unit="m"
+                                                         HelpText="Première altitude du profil linéaire."
+                                                         Text="{Binding Parameters.Wind.LowerAltitude}" />
+                                <controls:ParameterField Label="Vent bas X"
+                                                         Unit="m/s"
+                                                         HelpText="Composante Est à l'altitude basse."
+                                                         Text="{Binding Parameters.Wind.LowerWindX}" />
+                                <controls:ParameterField Label="Vent bas Y"
+                                                         Unit="m/s"
+                                                         HelpText="Composante Nord à l'altitude basse."
+                                                         Text="{Binding Parameters.Wind.LowerWindY}" />
+                                <controls:ParameterField Label="Vent bas Z"
+                                                         Unit="m/s"
+                                                         HelpText="Composante verticale à l'altitude basse."
+                                                         Text="{Binding Parameters.Wind.LowerWindZ}" />
+                                <controls:ParameterField Label="Altitude haute"
+                                                         Unit="m"
+                                                         HelpText="Seconde altitude, strictement supérieure à la première."
+                                                         Text="{Binding Parameters.Wind.UpperAltitude}" />
+                                <controls:ParameterField Label="Vent haut X"
+                                                         Unit="m/s"
+                                                         HelpText="Composante Est à l'altitude haute."
+                                                         Text="{Binding Parameters.Wind.UpperWindX}" />
+                                <controls:ParameterField Label="Vent haut Y"
+                                                         Unit="m/s"
+                                                         HelpText="Composante Nord à l'altitude haute."
+                                                         Text="{Binding Parameters.Wind.UpperWindY}" />
+                                <controls:ParameterField Label="Vent haut Z"
+                                                         Unit="m/s"
+                                                         HelpText="Composante verticale à l'altitude haute."
+                                                         Text="{Binding Parameters.Wind.UpperWindZ}" />
+
+                                <controls:ParameterTextArea Label="Profil de vent par couches"
+                                                            HelpText="Une ligne par couche : altitude;ventX;ventY;ventZ. Les altitudes doivent être strictement croissantes."
+                                                            Text="{Binding Parameters.Wind.LayeredWindProfile}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Traînée aérodynamique">
+                            <StackPanel>
+                                <controls:ParameterToggle Label="Activer la traînée"
+                                                          HelpText="Ajoute l'accélération quadratique opposée à la vitesse relative à l'air."
+                                                          IsChecked="{Binding Parameters.Drag.IsEnabled}" />
+                                <controls:ParameterChoice Label="Modèle du coefficient"
+                                                          HelpText="Coefficient constant ou interpolation linéaire d'une table Cd(Mach)."
+                                                          ItemsSource="{Binding Parameters.Drag.DragCoefficientModelOptions}"
+                                                          SelectedValue="{Binding Parameters.Drag.SelectedDragCoefficientModel}" />
+                                <controls:ParameterTextArea Label="Courbe Cd(Mach)"
+                                                            HelpText="Une ligne par point : Mach;Cd. Les Mach doivent être strictement croissants."
+                                                            Text="{Binding Parameters.Drag.TabulatedDragProfile}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Coriolis">
+                            <StackPanel>
+                                <controls:ParameterToggle Label="Activer Coriolis"
+                                                          HelpText="Ajoute a = -2 Ω Ã— v dans le repère local."
+                                                          IsChecked="{Binding Parameters.Rotation.IsCoriolisEnabled}" />
+                                <controls:ParameterChoice Label="Définition de la rotation"
+                                                          HelpText="Utilise soit latitude + norme de Ω, soit directement les trois composantes locales de Ω."
+                                                          ItemsSource="{Binding Parameters.Rotation.CoriolisDefinitionOptions}"
+                                                          SelectedValue="{Binding Parameters.Rotation.SelectedCoriolisDefinition}" />
+                                <controls:ParameterField Label="Latitude"
+                                                         Unit="°"
+                                                         HelpText="Latitude locale utilisée pour orienter l'axe de rotation."
+                                                         Text="{Binding Parameters.Rotation.LatitudeDegrees}" />
+                                <controls:ParameterField Label="Vitesse angulaire"
+                                                         Unit="rad/s"
+                                                         HelpText="Norme de la vitesse angulaire de l'astre."
+                                                         Text="{Binding Parameters.Rotation.AngularVelocity}" />
+                                <controls:ParameterField Label="Rotation de l'astre X"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante Est du vecteur Ω."
+                                                         Text="{Binding Parameters.Rotation.AngularVelocityX}" />
+                                <controls:ParameterField Label="Rotation de l'astre Y"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante Nord du vecteur Ω."
+                                                         Text="{Binding Parameters.Rotation.AngularVelocityY}" />
+                                <controls:ParameterField Label="Rotation de l'astre Z"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante verticale du vecteur Ω."
+                                                         Text="{Binding Parameters.Rotation.AngularVelocityZ}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Effet Magnus">
+                            <StackPanel>
+                                <controls:ParameterToggle Label="Activer Magnus"
+                                                          HelpText="Ajoute l'accélération liée à la rotation propre du projectile dans l'air."
+                                                          IsChecked="{Binding Parameters.Magnus.IsEnabled}" />
+                                <controls:ParameterField Label="Rotation du projectile X"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante Est de la vitesse angulaire du projectile."
+                                                         Text="{Binding Parameters.Magnus.AngularVelocityX}" />
+                                <controls:ParameterField Label="Rotation du projectile Y"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante Nord de la vitesse angulaire du projectile."
+                                                         Text="{Binding Parameters.Magnus.AngularVelocityY}" />
+                                <controls:ParameterField Label="Rotation du projectile Z"
+                                                         Unit="rad/s"
+                                                         HelpText="Composante verticale de la vitesse angulaire du projectile."
+                                                         Text="{Binding Parameters.Magnus.AngularVelocityZ}" />
+                                <controls:ParameterField Label="Coefficient de Magnus"
+                                                         Unit="—"
+                                                         HelpText="Coefficient sans dimension du modèle de Magnus actuel."
+                                                         Text="{Binding Parameters.Magnus.MagnusCoefficient}" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Solveur et limites">
+                <ScrollViewer Padding="12"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Méthode numérique">
+                            <StackPanel>
+                                <controls:ParameterChoice Label="Solveur"
+                                                          HelpText="Euler est pédagogique, RK4 est le solveur fixe principal, RK45 adapte automatiquement le pas."
+                                                          ItemsSource="{Binding Parameters.Solver.SolverOptions}"
+                                                          SelectedValue="{Binding Parameters.Solver.SelectedSolver}" />
+                                <controls:ParameterField Label="Pas / pas initial"
+                                                         Unit="s"
+                                                         HelpText="Pas fixe pour Euler et RK4, ou première proposition pour RK45."
+                                                         Text="{Binding Parameters.Solver.TimeStep}" />
+                                <controls:ParameterField Label="Tolérance absolue"
+                                                         Unit="—"
+                                                         HelpText="Échelle minimale admise pour l'erreur locale de RK45."
+                                                         Text="{Binding Parameters.Solver.AbsoluteTolerance}" />
+                                <controls:ParameterField Label="Tolérance relative"
+                                                         Unit="—"
+                                                         HelpText="Erreur locale admise relativement à la norme de l'état."
+                                                         Text="{Binding Parameters.Solver.RelativeTolerance}" />
+                                <controls:ParameterField Label="Pas minimal"
+                                                         Unit="s"
+                                                         HelpText="Borne inférieure du pas adaptatif."
+                                                         Text="{Binding Parameters.Solver.MinimumTimeStep}" />
+                                <controls:ParameterField Label="Pas maximal"
+                                                         Unit="s"
+                                                         HelpText="Borne supérieure du pas adaptatif."
+                                                         Text="{Binding Parameters.Solver.MaximumTimeStep}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Limites de simulation">
+                            <StackPanel>
+                                <controls:ParameterField Label="Durée maximale"
+                                                         Unit="s"
+                                                         HelpText="La simulation s'arrête si aucun impact n'est obtenu avant cette durée."
+                                                         Text="{Binding Parameters.Limits.MaximumSimulationTime}" />
+                                <controls:ParameterField Label="Altitude du sol"
+                                                         Unit="m"
+                                                         HelpText="Niveau Z utilisé pour détecter et interpoler l'impact."
+                                                         Text="{Binding Parameters.Limits.GroundAltitude}" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+            </Border>
+        </Grid>
+
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Status}"
+                           TextWrapping="Wrap" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

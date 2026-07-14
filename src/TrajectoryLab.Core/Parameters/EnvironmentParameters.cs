@@ -1,4 +1,6 @@
+using TrajectoryLab.Core.Atmosphere;
 using TrajectoryLab.Core.Mathematics;
+using TrajectoryLab.Core.Wind;
 
 namespace TrajectoryLab.Core;
 
@@ -6,36 +8,57 @@ public sealed class EnvironmentParameters
 {
     public double GravityAcceleration { get; }
 
-    public double AirDensity { get; }
+    public IAtmosphereModel AtmosphereModel { get; }
 
-    public Vector3D WindVelocity { get; }
+    public IWindModel WindModel { get; }
 
     public EnvironmentParameters(
         double GravityAcceleration,
-        double AirDensity,
-        Vector3D WindVelocity)
+        IAtmosphereModel AtmosphereModel,
+        IWindModel WindModel)
     {
-        // La valeur représente la norme positive de l'accélération gravitationnelle.
-        if (!double.IsFinite(GravityAcceleration) || GravityAcceleration <= 0.0)
+        // La valeur représente la norme positive
+        // de l'accélération gravitationnelle.
+        if (!double.IsFinite(GravityAcceleration) ||
+            GravityAcceleration <= 0.0)
         {
-            throw new ArgumentOutOfRangeException(nameof(GravityAcceleration), "L'accélération gravitationnelle doit être finie et strictement positive.");
+            throw new ArgumentOutOfRangeException(
+                nameof(GravityAcceleration),
+                "L'accélération gravitationnelle doit être finie et strictement positive."
+            );
         }
 
-        // Une densité nulle représente une simulation dans le vide.
-        if (!double.IsFinite(AirDensity) || AirDensity < 0.0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(AirDensity), "La densité de l'air doit être finie et positive ou nulle.");
-        }
+        ArgumentNullException.ThrowIfNull(
+            AtmosphereModel
+        );
 
-        if (!double.IsFinite(WindVelocity.X) || 
-            !double.IsFinite(WindVelocity.Y) ||
-            !double.IsFinite(WindVelocity.Z))
-        {
-            throw new ArgumentOutOfRangeException(nameof(WindVelocity),"Les composantes de la vitesse du vent doivent être finies.");
-        }
+        ArgumentNullException.ThrowIfNull(
+            WindModel
+        );
 
-        this.GravityAcceleration = GravityAcceleration;
-        this.AirDensity = AirDensity;
-        this.WindVelocity = WindVelocity;
+        this.GravityAcceleration =
+            GravityAcceleration;
+
+        this.AtmosphereModel =
+            AtmosphereModel;
+
+        this.WindModel =
+            WindModel;
+    }
+
+    // Ce constructeur conserve la compatibilité
+    // avec les scénarios utilisant directement un vecteur constant.
+    public EnvironmentParameters(
+        double GravityAcceleration,
+        IAtmosphereModel AtmosphereModel,
+        Vector3D WindVelocity)
+        : this(
+            GravityAcceleration,
+            AtmosphereModel,
+            new ConstantWindModel(
+                WindVelocity
+            )
+        )
+    {
     }
 }

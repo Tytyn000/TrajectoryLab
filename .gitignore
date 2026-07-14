@@ -480,3 +480,14 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# TrajectoryLab temporary development files
+backup/
+*.bak
+Apply-TrajectoryLab-*.ps1
+Fix-TrajectoryLab-*.ps1
+Reset-TrajectoryLab-*.ps1
+Install-TrajectoryLab-*.ps1
+GRAPH_WIRING_DIAGNOSTIC.txt
+PROJECT_CONTEXT.md
+TRAJECTORYLAB_HANDOFF_NEXT_CHAT*.md

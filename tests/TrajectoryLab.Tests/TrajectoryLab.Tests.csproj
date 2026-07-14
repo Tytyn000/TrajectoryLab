@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TrajectoryLab.Core\TrajectoryLab.Core.csproj" />
+    <ProjectReference Include="..\..\src\TrajectoryLab.Application\TrajectoryLab.Application.csproj" />
   </ItemGroup>
 
 </Project>

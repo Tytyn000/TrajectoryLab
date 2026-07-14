@@ -1,4 +1,5 @@
 using TrajectoryLab.Core;
+using TrajectoryLab.Core.Atmosphere;
 using TrajectoryLab.Core.Mathematics;
 using Xunit;
 
@@ -12,7 +13,8 @@ public sealed class ParameterTests
         ProjectileParameters Parameters = new(
             Mass: 2.0,
             DragCoefficient: 0.47,
-            CrossSectionalArea: 0.01);
+            CrossSectionalArea: 0.01
+        );
 
         Assert.Equal(2.0, Parameters.Mass);
         Assert.Equal(0.47, Parameters.DragCoefficient);
@@ -30,7 +32,9 @@ public sealed class ParameterTests
             new ProjectileParameters(
                 Mass: Mass,
                 DragCoefficient: 0.47,
-                CrossSectionalArea: 0.01));
+                CrossSectionalArea: 0.01
+            )
+        );
     }
 
     [Theory]
@@ -44,7 +48,9 @@ public sealed class ParameterTests
             new ProjectileParameters(
                 Mass: 2.0,
                 DragCoefficient: DragCoefficient,
-                CrossSectionalArea: 0.01));
+                CrossSectionalArea: 0.01
+            )
+        );
     }
 
     [Theory]
@@ -58,27 +64,71 @@ public sealed class ParameterTests
             new ProjectileParameters(
                 Mass: 2.0,
                 DragCoefficient: 0.47,
-                CrossSectionalArea: CrossSectionalArea));
+                CrossSectionalArea: CrossSectionalArea
+            )
+        );
     }
 
     [Fact]
     public void EnvironmentParametersStoreValidValues()
     {
-        Vector3D WindVelocity = new(
-            X: 5.0,
-            Y: -2.0,
-            Z: 0.5);
+        ConstantAtmosphereModel AtmosphereModel =
+            new(
+                AirDensity: 1.225
+            );
 
-        EnvironmentParameters Parameters = new(
-            GravityAcceleration: 9.80665,
-            AirDensity: 1.225,
-            WindVelocity: WindVelocity);
+        Vector3D WindVelocity =
+            new(
+                X: 5.0,
+                Y: -2.0,
+                Z: 0.5
+            );
 
-        Assert.Equal(9.80665, Parameters.GravityAcceleration);
-        Assert.Equal(1.225, Parameters.AirDensity);
-        Assert.Equal(5.0, Parameters.WindVelocity.X);
-        Assert.Equal(-2.0, Parameters.WindVelocity.Y);
-        Assert.Equal(0.5, Parameters.WindVelocity.Z);
+        EnvironmentParameters Parameters =
+            new(
+                GravityAcceleration: 9.80665,
+                AtmosphereModel: AtmosphereModel,
+                WindVelocity: WindVelocity
+            );
+
+        Vector3D ActualWindVelocity =
+            Parameters.WindModel.GetWindVelocity(
+                Position: Vector3D.Zero,
+                Time: 0.0
+            );
+
+        Assert.Equal(
+            9.80665,
+            Parameters.GravityAcceleration
+        );
+
+        Assert.Same(
+            AtmosphereModel,
+            Parameters.AtmosphereModel
+        );
+
+        Assert.Equal(
+            1.225,
+            Parameters.AtmosphereModel
+                .GetAirDensity(
+                    Altitude: 0.0
+                )
+        );
+
+        Assert.Equal(
+            5.0,
+            ActualWindVelocity.X
+        );
+
+        Assert.Equal(
+            -2.0,
+            ActualWindVelocity.Y
+        );
+
+        Assert.Equal(
+            0.5,
+            ActualWindVelocity.Z
+        );
     }
 
     [Theory]
@@ -92,42 +142,24 @@ public sealed class ParameterTests
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new EnvironmentParameters(
                 GravityAcceleration: GravityAcceleration,
-                AirDensity: 1.225,
-                WindVelocity: new Vector3D(
-                    X: 0.0,
-                    Y: 0.0,
-                    Z: 0.0)));
-    }
-
-    [Theory]
-    [InlineData(-1.0)]
-    [InlineData(double.NaN)]
-    [InlineData(double.PositiveInfinity)]
-    public void EnvironmentParametersRejectInvalidAirDensity(
-        double AirDensity)
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new EnvironmentParameters(
-                GravityAcceleration: 9.80665,
-                AirDensity: AirDensity,
-                WindVelocity: new Vector3D(
-                    X: 0.0,
-                    Y: 0.0,
-                    Z: 0.0)));
+                AtmosphereModel: new ConstantAtmosphereModel(
+                    AirDensity: 1.225
+                ),
+                WindVelocity: Vector3D.Zero
+            )
+        );
     }
 
     [Fact]
-    public void EnvironmentParametersAllowVacuum()
+    public void EnvironmentParametersRejectNullAtmosphereModel()
     {
-        EnvironmentParameters Parameters = new(
-            GravityAcceleration: 9.80665,
-            AirDensity: 0.0,
-            WindVelocity: new Vector3D(
-                X: 0.0,
-                Y: 0.0,
-                Z: 0.0));
-
-        Assert.Equal(0.0, Parameters.AirDensity);
+        Assert.Throws<ArgumentNullException>(() =>
+            new EnvironmentParameters(
+                GravityAcceleration: 9.80665,
+                AtmosphereModel: null!,
+                WindVelocity: Vector3D.Zero
+            )
+        );
     }
 
     [Fact]
@@ -136,7 +168,8 @@ public sealed class ParameterTests
         SimulationSettings Settings = new(
             TimeStep: 0.01,
             MaximumSimulationTime: 60.0,
-            GroundAltitude: 100.0);
+            GroundAltitude: 100.0
+        );
 
         Assert.Equal(0.01, Settings.TimeStep);
         Assert.Equal(60.0, Settings.MaximumSimulationTime);
@@ -148,12 +181,15 @@ public sealed class ParameterTests
     [InlineData(-0.01)]
     [InlineData(double.NaN)]
     [InlineData(double.PositiveInfinity)]
-    public void SimulationSettingsRejectInvalidTimeStep(double TimeStep)
+    public void SimulationSettingsRejectInvalidTimeStep(
+        double TimeStep)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new SimulationSettings(
                 TimeStep: TimeStep,
-                MaximumSimulationTime: 60.0));
+                MaximumSimulationTime: 60.0
+            )
+        );
     }
 
     [Theory]
@@ -167,7 +203,10 @@ public sealed class ParameterTests
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new SimulationSettings(
                 TimeStep: 0.01,
-                MaximumSimulationTime: MaximumSimulationTime));
+                MaximumSimulationTime:
+                    MaximumSimulationTime
+            )
+        );
     }
 
     [Fact]
@@ -176,6 +215,8 @@ public sealed class ParameterTests
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new SimulationSettings(
                 TimeStep: 10.0,
-                MaximumSimulationTime: 5.0));
+                MaximumSimulationTime: 5.0
+            )
+        );
     }
 }

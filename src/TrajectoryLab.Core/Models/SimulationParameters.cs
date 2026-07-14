@@ -2,35 +2,57 @@ using TrajectoryLab.Core.Mathematics;
 
 namespace TrajectoryLab.Core.Models;
 
-/// Paramètres utilisés pour lancer une simulation.
-public sealed record SimulationParameters
+// Regroupe les conditions initiales et les paramètres d'une simulation.
+public sealed class SimulationParameters
 {
-    public required Vector3D InitialPosition { get; init; }
+    public Vector3D InitialPosition { get; }
 
-    public required Vector3D InitialVelocity { get; init; }
+    public Vector3D InitialVelocity { get; }
 
-    public Vector3D Gravity { get; init; } =
-        new(0.0, 0.0, -9.80665);
+    public ProjectileParameters Projectile { get; }
 
-    // Masse du projectile en kilogrammes.
-    public double Mass { get; init; } = 1.0;
+    public EnvironmentParameters Environment { get; }
 
-    // Coefficient de traînée sans unité.
-    public double DragCoefficient { get; init; } = 0.47;
+    public SimulationSettings Settings { get; }
 
-    // Surface frontale en mètres carrés.
-    public double CrossSectionalArea { get; init; } = 0.01;
+    public SimulationParameters(
+        Vector3D InitialPosition,
+        Vector3D InitialVelocity,
+        ProjectileParameters Projectile,
+        EnvironmentParameters Environment,
+        SimulationSettings Settings)
+    {
+        ArgumentNullException.ThrowIfNull(Projectile);
+        ArgumentNullException.ThrowIfNull(Environment);
+        ArgumentNullException.ThrowIfNull(Settings);
 
-    // Densité de l'air en kilogrammes par mètre cube.
-    public double AirDensity { get; init; } = 1.225;
+        ValidateVector(
+            InitialPosition,
+            nameof(InitialPosition)
+        );
 
-    // Vitesse du vent en mètres par seconde.
-    public Vector3D WindVelocity { get; init; } =
-        Vector3D.Zero;
+        ValidateVector(
+            InitialVelocity,
+            nameof(InitialVelocity)
+        );
 
-    public double GroundAltitude { get; init; } = 0.0;
+        this.InitialPosition = InitialPosition;
+        this.InitialVelocity = InitialVelocity;
+        this.Projectile = Projectile;
+        this.Environment = Environment;
+        this.Settings = Settings;
+    }
 
-    public double TimeStep { get; init; } = 0.01;
-
-    public double MaximumDuration { get; init; } = 300.0;
+    private static void ValidateVector(
+        Vector3D Vector,
+        string ParameterName)
+    {
+        if (!double.IsFinite(Vector.X) ||
+            !double.IsFinite(Vector.Y) ||
+            !double.IsFinite(Vector.Z))
+        {
+            throw new ArgumentOutOfRangeException(ParameterName, "Toutes les composantes du vecteur doivent être finies."
+            );
+        }
+    }
 }

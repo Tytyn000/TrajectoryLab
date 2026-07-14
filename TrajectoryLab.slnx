@@ -1,7 +1,9 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/TrajectoryLab.Application/TrajectoryLab.Application.csproj" />
     <Project Path="src/TrajectoryLab.Cli/TrajectoryLab.Cli.csproj" />
     <Project Path="src/TrajectoryLab.Core/TrajectoryLab.Core.csproj" />
+    <Project Path="src/TrajectoryLab.Desktop/TrajectoryLab.Desktop.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TrajectoryLab.Tests/TrajectoryLab.Tests.csproj" />
